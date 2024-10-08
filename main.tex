@@ -1,0 +1,83 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\title{Prior Fitted Networks for Bayesian Deep Learning: A Comprehensive Guide}
+\author{Simon A. Lee}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+In this document, we explore the concept of \textbf{Prior Fitted Networks (PFNs)}, a novel approach in Bayesian deep learning, and its potential application to electronic health record (EHR) sequence data. PFNs provide a way to perform efficient Bayesian inference by leveraging prior knowledge and synthetic data, thereby enabling flexible, scalable, and interpretable models. The aim of this document is to provide a pedagogical overview of PFNs, followed by a structured discussion on designing custom priors for modeling EHR data.
+
+\section{What Are Prior Fitted Networks (PFNs)?}
+
+Prior Fitted Networks (PFNs) are neural networks trained to approximate the posterior predictive distribution of a supervised learning problem given a set of priors. Instead of directly learning from real-world data, PFNs are trained on synthetic datasets sampled from a predefined prior distribution. These networks learn to perform Bayesian inference on unseen tasks by learning patterns from this synthetic data, allowing them to generalize to new scenarios that conform to the prior.
+
+\subsection{Bayesian Background}
+
+In a standard Bayesian Neural Network (BNN), we define a prior distribution \( p(w) \) over the network weights \( w \) and a likelihood function \( p(y|x, w) \) that relates inputs \( x \) to outputs \( y \). The posterior distribution \( p(w|D) \) given a dataset \( D = \{(x_i, y_i)\}_{i=1}^N \) is defined as:
+
+\[
+p(w|D) = \frac{p(D|w)p(w)}{p(D)} = \frac{p(w) \prod_{i=1}^N p(y_i|x_i, w)}{\int p(w) \prod_{i=1}^N p(y_i|x_i, w) \, dw}
+\]
+
+The challenge in Bayesian deep learning is to approximate the posterior \( p(w|D) \), which often requires expensive computations such as Markov Chain Monte Carlo (MCMC). PFNs bypass this by training directly on synthetic data generated from a prior distribution over datasets, allowing for a single forward pass to perform Bayesian inference.
+
+\subsection{PFN Training Process}
+
+The core idea of PFNs is to train a standard neural network on synthetic data generated from a chosen prior. For example, if we define a Gaussian Process (GP) prior over a regression task, PFNs are trained using multiple synthetic datasets sampled from this GP prior. Each dataset consists of a training subset and a test subset, allowing the network to learn to predict the distribution over test points given the training points. This makes PFNs highly efficient for large-scale inference tasks.
+
+\subsection{PFNs for Bayesian Inference}
+
+Once a PFN is trained on synthetic tasks, it can generalize to new, unseen tasks by approximating the posterior predictive distribution \( p(y|x, D) \). This property makes PFNs ideal for scenarios where one needs rapid Bayesian inference with high computational efficiency, such as in high-dimensional or sequential data.
+
+\section{Designing Priors for EHR Sequence Data}
+
+For electronic health record (EHR) data, designing effective priors is crucial because patient trajectories are influenced by complex clinical events, temporal dependencies, and multimodal interactions. Below, we outline several custom priors that can be incorporated into the PFN framework to model EHR sequences.
+
+\subsection{Disease Progression Priors}
+
+Many health conditions evolve over time, with distinct stages and transitions between states. We can model this progression using \textbf{Hidden Markov Models (HMMs)} or \textbf{Latent Gaussian Processes}.
+
+\begin{itemize}
+    \item \textbf{State-based Priors}: Use HMMs to define discrete states (e.g., disease severity levels) with transition probabilities between states.
+    \item \textbf{Temporal Priors}: Use Gaussian Process priors to capture gradual changes in physiological variables like heart rate or blood pressure.
+\end{itemize}
+
+\subsection{Intervention Priors}
+
+ICU data often includes discrete interventions such as medication administration or mechanical ventilation. Priors over interventions should reflect clinical guidelines and expected treatment patterns.
+
+\begin{itemize}
+    \item \textbf{Categorical Priors for Treatments}: Use multinomial distributions to model the probability of different treatments given a patient's current state.
+    \item \textbf{Protocol-based Priors}: Capture the timing and dosage of medications, such as administering vasopressors based on blood pressure levels.
+\end{itemize}
+
+\subsection{Multimodal Priors}
+
+EHR data is inherently multimodal, encompassing labs, vitals, treatments, and diagnoses.
+
+\begin{itemize}
+    \item \textbf{Hierarchical Priors}: Use hierarchical Bayesian models to define priors over patient-specific and population-level parameters, such as baseline heart rate or lab values.
+    \item \textbf{Sparse Priors for Missing Data}: Use zero-inflated priors to model the high frequency of missingness in EHR data.
+\end{itemize}
+
+\subsection{Comorbidity Priors}
+
+Patients often have multiple comorbid conditions that interact in complex ways.
+
+\begin{itemize}
+    \item \textbf{Latent Priors for Disease Interactions}: Use latent variable models to define priors over the co-occurrence of comorbidities (e.g., diabetes and hypertension).
+\end{itemize}
+
+\section{Conclusion}
+
+Prior Fitted Networks offer a powerful framework for efficient Bayesian inference, especially when combined with carefully designed priors for complex sequence data like EHRs. By leveraging domain knowledge to define these priors, PFNs can be tailored to capture the intricacies of patient trajectories, treatment effects, and multimodal interactions, making them a promising approach for healthcare applications.
+
+\end{document}
