@@ -80,4 +80,54 @@ Patients often have multiple comorbid conditions that interact in complex ways.
 
 Prior Fitted Networks offer a powerful framework for efficient Bayesian inference, especially when combined with carefully designed priors for complex sequence data like EHRs. By leveraging domain knowledge to define these priors, PFNs can be tailored to capture the intricacies of patient trajectories, treatment effects, and multimodal interactions, making them a promising approach for healthcare applications.
 
+
+\section{Introduction to Bayesian Neural Networks and Structured Causal Models}
+
+Bayesian Neural Networks (BNNs) are a class of neural networks that incorporate principles of Bayesian inference into their architecture to model uncertainty in predictions. In traditional neural networks, weights are fixed after training, and predictions are made deterministically. In contrast, BNNs treat the weights of the network as probability distributions rather than fixed values, allowing the network to quantify uncertainty in both the weights and the predictions. The core idea of Bayesian inference is to update beliefs about uncertain parameters based on observed data using Bayes' theorem, which can be written as:
+
+\[
+P(\mathbf{w} | \mathcal{D}) = \frac{P(\mathcal{D} | \mathbf{w}) P(\mathbf{w})}{P(\mathcal{D})},
+\]
+
+where $\mathbf{w}$ are the weights of the network, $\mathcal{D}$ is the observed data, $P(\mathbf{w})$ is the prior distribution representing the beliefs about the weights before seeing the data, $P(\mathcal{D} | \mathbf{w})$ is the likelihood, i.e., the probability of the data given the weights, and $P(\mathcal{D})$ is the marginal likelihood (or evidence), which acts as a normalizing factor.
+
+In BNNs, the prior distribution over the weights is typically assumed to be a Gaussian distribution, and after training on data, we compute the posterior distribution. This posterior reflects the updated uncertainty over the weights. To make predictions in BNNs, we marginalize over the posterior distribution of the weights:
+
+\[
+P(\mathbf{y} | \mathbf{x}, \mathcal{D}) = \int P(\mathbf{y} | \mathbf{x}, \mathbf{w}) P(\mathbf{w} | \mathcal{D}) d\mathbf{w}.
+\]
+
+However, this integral is generally intractable, and techniques such as variational inference or Markov Chain Monte Carlo (MCMC) are used to approximate it. One common approach is to approximate the posterior distribution using a simpler distribution $q(\mathbf{w})$, with the goal of minimizing the Kullback-Leibler (KL) divergence between the true posterior and the approximate posterior:
+
+\[
+\text{KL}(q(\mathbf{w}) || P(\mathbf{w} | \mathcal{D})).
+\]
+
+This turns the inference problem into an optimization problem. In Bayesian Neural Networks, the loss function typically includes a term for the data likelihood and a term for the prior, encouraging a balance between fitting the data and regularizing the weights. The variational objective function (also known as the evidence lower bound, ELBO) can be written as:
+
+\[
+\mathcal{L} = \mathbb{E}_{q(\mathbf{w})} \left[ \log P(\mathcal{D} | \mathbf{w}) \right] - \text{KL}(q(\mathbf{w}) || P(\mathbf{w})).
+\]
+
+Structured Causal Models (SCMs) provide a framework for understanding and modeling cause-and-effect relationships in data. SCMs consist of a set of variables and structural equations that describe how the variables interact, allowing for interpretable machine learning by making explicit the causal structure of the data. SCMs are often represented as directed acyclic graphs (DAGs), where nodes represent variables and directed edges represent causal relationships. For example, a causal graph may show that $X \rightarrow Y \rightarrow Z$, indicating that $X$ causes $Y$, and $Y$ causes $Z$.
+
+Each variable in an SCM is defined by a structural equation that describes how it is determined by its parent variables. For instance, if $X$ causes $Y$, the structural equation for $Y$ might be:
+
+\[
+Y = f_X(X, \epsilon_Y),
+\]
+
+where $f_X$ is a function and $\epsilon_Y$ represents noise or unobserved factors. SCMs also allow for causal inference, where we estimate the effect of interventions, such as what happens to $Y$ if we set $X$ to a certain value. This is achieved using the do-calculus formalism, which computes the effect of interventions as $P(Y | \text{do}(X = x))$. This quantity represents the probability of $Y$ given that we intervene to set $X = x$, which differs from the observational probability $P(Y | X = x)$.
+
+Mathematically, an SCM is defined by a set of endogenous variables $\mathbf{X}$, exogenous variables $\mathbf{U}$, and structural functions $f_i$ that map the parent variables and exogenous noise to the child variables:
+
+\[
+X_i = f_i(\text{Parents}(X_i), U_i),
+\]
+
+along with a causal graph $G$ representing the dependency structure of the endogenous variables. The key strength of SCMs lies in their ability to model interventions and counterfactuals, enabling reasoning about "what if" scenarios. For example, if we know that $X = 1$ and $Y = 0$, we can ask "what would have happened to $Y$ if $X$ had been 0?" This type of reasoning is enabled by the structural equations and causal graph.
+
+In summary, while Bayesian Neural Networks provide a principled way to handle uncertainty in predictions through Bayesian inference, Structured Causal Models provide a framework for understanding causal relationships and reasoning about interventions. Together, these approaches offer complementary strengths in domains such as healthcare, where both uncertainty and causality are critical to making informed decisions.
+
+
 \end{document}
